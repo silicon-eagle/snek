@@ -6,5 +6,3 @@ The algorithm is a hamiltonian cycle, which is a cycle that visits every vertex 
 Besides the algorithm, there is also a simple implementation of the game itself, which can be played by the user by simply pressing one of the arrow keys or buttons to 'take control' of the snake. The game is designed to be simple and fun, with a pixelated art style and a catchy soundtrack.
 
 The main idea is to incorporate this project in a larger website, so it is built modular.
-
-p

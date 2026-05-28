@@ -40,7 +40,17 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+- **Code Quality Gate**: Plan defines modular boundaries between game rules,
+  rendering, input/control handling, and solver/autoplay logic; strict TypeScript
+  and linting approach is explicit.
+- **Testing Gate**: Plan identifies required automated test coverage (unit,
+  integration, regression) for all changed behavior.
+- **UX Consistency Gate**: Plan includes validation approach for consistent
+  controls, HUD feedback, and desktop/mobile behavior, including embed context.
+- **Performance Gate**: Plan includes measurable budgets and verification method
+  for frame time/FPS, input latency, and memory behavior over sustained play.
+
+If any gate fails, stop and resolve before entering Phase 0 research.
 
 ## Project Structure
 

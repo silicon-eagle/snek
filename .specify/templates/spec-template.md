@@ -93,6 +93,24 @@
 - **FR-004**: System MUST [data requirement, e.g., "persist user preferences"]
 - **FR-005**: System MUST [behavior, e.g., "log all security events"]
 
+### User Experience Consistency Requirements *(mandatory)*
+
+- **UX-001**: Controls MUST provide consistent behavior across all supported
+  input modes (e.g., keyboard and on-screen controls).
+- **UX-002**: UI states and feedback MUST remain visually and behaviorally
+  consistent across supported viewport classes (desktop and mobile).
+- **UX-003**: Embed/host integration constraints MUST be explicitly documented
+  when the feature is intended to run inside a parent website/application.
+
+### Performance Requirements *(mandatory)*
+
+- **PRF-001**: Feature MUST define measurable runtime performance budgets relevant
+  to the primary user journey.
+- **PRF-002**: Feature MUST define how performance will be validated (tool,
+  scenario, and pass/fail threshold).
+- **PRF-003**: Feature MUST define acceptable regression threshold and handling
+  for budget violations.
+
 *Example of marking unclear requirements:*
 
 - **FR-006**: System MUST authenticate users via [NEEDS CLARIFICATION: auth method not specified - email/password, SSO, OAuth?]
@@ -116,6 +134,10 @@
 - **SC-002**: [Measurable metric, e.g., "System handles 1000 concurrent users without degradation"]
 - **SC-003**: [User satisfaction metric, e.g., "90% of users successfully complete primary task on first attempt"]
 - **SC-004**: [Business metric, e.g., "Reduce support tickets related to [X] by 50%"]
+- **SC-005**: [UX consistency metric, e.g., "95% of control interactions are
+  completed without input confusion across supported devices"]
+- **SC-006**: [Performance metric, e.g., "Primary flow maintains defined frame
+  time/FPS and latency budgets under expected load"]
 
 ## Assumptions
 
