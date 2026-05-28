@@ -1,33 +1,7 @@
-# Contract: Autoplay Strategy Interface
+# Contract: Autoplay Strategy (Deferred For Initial Release)
 
-## Purpose
-Define how the game engine consumes autoplay strategies, with the Hamiltonian-cycle strategy as the default implementation.
+This file is intentionally retained for history only.
 
-## Strategy Input Contract
-Each strategy evaluation receives:
-- immutable game snapshot for current tick
-- grid dimensions
-- snake coordinates and heading
-- food coordinate
-- previous strategy state (if any)
+Autoplay behavior is not part of the active initial-release scope.
 
-## Strategy Output Contract
-Each evaluation returns:
-- next direction (up/down/left/right)
-- updated strategy state
-- optional diagnostics metadata for debugging/performance traces
-
-## Validity Rules
-- Returned direction must represent a legal single-tile move.
-- Returned direction must not reverse directly into the snake body.
-- Strategy must produce deterministic output for identical input snapshot/state.
-
-## Hamiltonian Strategy Guarantees
-- cycle covers all grid coordinates exactly once.
-- traversal index advances deterministically per tick.
-- strategy remains completion-oriented and avoids self-collision under valid board assumptions.
-
-## Failure Handling
-- If strategy output is invalid, engine must reject the move and emit deterministic diagnostic output.
-- Invalid strategy output must not corrupt core game state.
-- Host-visible game mode indicator must remain accurate when strategy fallback occurs.
+Active product scope is limited to manual keyboard arrow control with auto-start and reset-only UI.

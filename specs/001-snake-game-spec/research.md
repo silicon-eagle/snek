@@ -1,64 +1,58 @@
-# Research: Snake Game Application
+# Research: Minimal Snake Game
 
-## Decision 1: React Orchestration + Canvas Rendering
-Decision: Use React for application lifecycle and HUD composition, while isolating all per-tick drawing to an HTML Canvas rendering module.
-Rationale: This preserves the architecture called out in README (TypeScript, React, Vite, Canvas) and avoids unnecessary React reconciliation during high-frequency game updates.
-Alternatives considered:
-- DOM element rendering for snake cells: easier to inspect but degrades rendering performance at higher speeds.
-- WebGL renderer: better headroom but unnecessary complexity for pixel-art scope.
+## Decision 1: Canvas + React for Initial Build
 
-## Decision 2: Deterministic Tick-Based Core Engine
-Decision: Implement game progression as deterministic fixed-step updates over a strongly typed game state snapshot.
-Rationale: Determinism simplifies debugging, regression testing, and parity between manual and autoplay modes.
-Alternatives considered:
-- Variable delta-time movement: can feel smooth but increases edge-case complexity for grid logic.
-- Event-only state mutation: easier to wire initially but harder to reason about temporal ordering.
+Decision: Use React for app bootstrap and lifecycle, and render the game in a Canvas-based square grid.
 
-## Decision 3: Hamiltonian-Cycle Autoplay Strategy
-Decision: Use a precomputed Hamiltonian-cycle index over the grid as the default autoplay strategy for completion-focused play.
-Rationale: A valid cycle guarantees eventual full-board coverage under standard snake constraints, matching project goals in README.
-Alternatives considered:
-- Shortest-path-to-food heuristics only: can trap the snake late game.
-- Randomized search strategies: unpredictable and unsuitable for always-win expectations.
+Rationale: This keeps rendering efficient while supporting the intended minimal UI surface.
 
-## Decision 4: Control Ownership Arbitration
-Decision: Introduce an explicit control ownership model with two modes: manual and autoplay, with mode change applied at a deterministic tick boundary.
-Rationale: Prevents conflicting input sources and ensures clean handoff without state desynchronization.
 Alternatives considered:
-- Last-input-wins every frame: simple but causes race conditions and inconsistent behavior.
-- Separate game loops per mode: high complexity and unnecessary duplication.
 
-## Decision 5: Testing Stack for Required Coverage
-Decision: Use Vitest for unit tests, React Testing Library for UI behavior, and Playwright for browser integration and regression flows.
-Rationale: This combination covers deterministic logic, interaction behavior, and real browser timing/performance constraints.
-Alternatives considered:
-- Unit tests only: insufficient for control-handoff and embed lifecycle validation.
-- End-to-end tests only: too slow and coarse for core logic regressions.
+- DOM-grid rendering: simpler visually, but less efficient for frequent updates.
+- Rich HUD and control panels: not selected for initial release scope.
 
-## Decision 6: Performance Measurement Approach
-Decision: Validate performance using frame-timing instrumentation (requestAnimationFrame metrics), browser performance profiling, and scripted 5-minute sessions.
-Rationale: Matches constitution performance gates and provides repeatable thresholds for FPS, latency, and memory growth.
-Alternatives considered:
-- Manual visual checks only: not measurable or repeatable.
-- Synthetic microbenchmarks only: may miss real runtime bottlenecks.
+## Decision 2: Keyboard Arrow Input Only
 
-## Decision 7: Embedding Contract for Host Websites
-Decision: Expose a small host integration surface (initialize, start/pause/restart, mode switch, destroy, state callbacks) documented in a module contract.
-Rationale: README states modular integration into a larger website; explicit contracts reduce integration ambiguity.
-Alternatives considered:
-- Tight coupling to a specific host page framework: faster short term, poor reuse.
-- No explicit lifecycle contract: higher risk of leaks and inconsistent host behavior.
+Decision: Accept only arrow keys for movement and ignore all other movement inputs.
 
-## Decision 8: Audio as Optional Capability
-Decision: Keep soundtrack playback optional and non-blocking, with graceful fallback when playback is unavailable.
-Rationale: Audio should enhance experience without impacting game progression or compliance with browser autoplay policies.
-Alternatives considered:
-- Mandatory audio initialization: fragile across browsers and accessibility preferences.
-- No audio support: misses stated product tone from README.
+Rationale: Enforces a single interaction model and removes ambiguity.
 
-## Decision 9: Standardized TypeScript Toolchain
-Decision: Standardize development and CI commands on pnpm + tsc + tsx + eslint + prettier + vitest + vite.
-Rationale: A single toolchain reduces environment drift, simplifies onboarding, and keeps type, lint, format, test, and build steps consistent across contributors.
 Alternatives considered:
-- Mixed npm/yarn usage: increases lockfile churn and command inconsistency.
-- Transpile-then-run script flows without tsx: adds friction for TypeScript utility scripts.
+
+- WASD or touch controls: deferred to future exploration.
+
+## Decision 3: Auto-Start + Reset-Only Session Control
+
+Decision: Session starts automatically when app mounts; only one UI action exists: reset.
+
+Rationale: Removes control complexity and matches requested behavior.
+
+Alternatives considered:
+
+- Start/pause/resume/stop lifecycle controls: deferred to avoid unnecessary UI and logic overhead.
+
+## Decision 4: Minimal Core State Surface
+
+Decision: Define essential session state only (running/won/lost, snake, food, score, tick) for the initial implementation.
+
+Rationale: Directly supports the "minimal code and abstractions" requirement.
+
+Alternatives considered:
+
+- Broader mode and autoplay state models: deferred due to added complexity.
+
+## Decision 5: Test Strategy Focused on Minimal Behavior
+
+Decision: Keep unit and integration tests focused on keyboard movement, auto-start, reset, and minimal UI assertions.
+
+Rationale: Test coverage should enforce the reduced product surface instead of legacy features.
+
+Alternatives considered:
+
+- Expanding required gates to autoplay and embedding suites: deferred from initial release.
+
+## Decision 6: Standardized Toolchain Remains
+
+Decision: Keep pnpm + tsc + tsx + eslint + prettier + vitest + vite.
+
+Rationale: Tool consistency is still valuable even with reduced feature scope.
