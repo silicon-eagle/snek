@@ -11,16 +11,27 @@ README: TypeScript + React + Vite + HTML Canvas. The feature delivers manual
 play, deterministic Hamiltonian-cycle autoplay, explicit win/lose outcomes,
 mid-session control handoff, and host-site integration behavior while enforcing
 quality, UX consistency, and performance budgets from the constitution.
+Tooling is standardized to pnpm, tsc, tsx, eslint, prettier, vitest, and vite.
 
 ## Technical Context
 
-**Language/Version**: TypeScript 5.x (strict mode), Node.js 20.x toolchain
+**Language/Version**: TypeScript 5.x (strict mode, validated by tsc), Node.js 20.x toolchain
+
+**Package Manager**: pnpm
 
 **Primary Dependencies**: React 18, Vite 5, HTML Canvas API, Web Audio/HTMLAudio APIs
 
+**Type Checking**: tsc (via `pnpm typecheck`)
+
+**TypeScript Runtime**: tsx (for direct TypeScript script execution)
+
+**Linting/Formatting**: eslint + prettier
+
 **Storage**: N/A (in-memory session state for v1)
 
-**Testing**: Vitest, React Testing Library, Playwright
+**Testing**: vitest, React Testing Library, Playwright
+
+**Build/Dev Server**: vite (via `pnpm dev`, `pnpm build`, `pnpm preview`)
 
 **Target Platform**: Modern desktop and mobile browsers (Chromium, Firefox, Safari)
 
@@ -31,7 +42,8 @@ step decision/update completes within one visual tick for >=95% of moves
 
 **Constraints**: Deterministic Hamiltonian-cycle autoplay, consistent rules
 across keyboard and on-screen controls, host-site embedding lifecycle, no backend
-dependency in this scope
+dependency in this scope, and pnpm/tsc/tsx/eslint/prettier/vitest/vite toolchain
+consistency across local and CI workflows
 
 **Scale/Scope**: Single-player local sessions, one active session per mounted
 instance, default grid/tick configuration for v1
@@ -82,6 +94,13 @@ specs/001-snake-game-spec/
 ### Source Code (repository root)
 
 ```text
+package.json
+pnpm-lock.yaml
+tsconfig.json
+vite.config.ts
+eslint.config.js
+.prettierrc
+
 src/
 ├── app/
 │   ├── GameShell.tsx

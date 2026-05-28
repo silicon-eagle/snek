@@ -101,6 +101,16 @@ As an integrator, I want the game to behave predictably when embedded so it can 
 - **FR-014**: System MUST support modular embedding in a larger website with predictable initialization and teardown behavior.
 - **FR-015**: System MUST maintain equivalent gameplay rules and outcomes across supported desktop and mobile interaction contexts.
 
+### Architecture & Tooling Constraints *(mandatory)*
+
+- **AT-001**: The project MUST use pnpm as the package manager for dependency management and script execution.
+- **AT-002**: The project MUST use tsc as the authoritative type-checking step and treat type errors as blocking.
+- **AT-003**: The project MUST use tsx for running TypeScript utility scripts directly during development workflows.
+- **AT-004**: The project MUST use eslint for linting TypeScript and React code before merge.
+- **AT-005**: The project MUST use prettier for formatting and formatting checks.
+- **AT-006**: The project MUST use vitest as the primary automated test runner for unit and integration-oriented suites.
+- **AT-007**: The project MUST use vite as the application development server and build pipeline.
+
 ### User Experience Consistency Requirements *(mandatory)*
 
 - **UX-001**: Control prompts, labels, and behavior MUST be consistent across keyboard and on-screen control modes.
@@ -145,3 +155,4 @@ As an integrator, I want the game to behave predictably when embedded so it can 
 - Persisted player profiles and cloud save are out of scope for this specification.
 - Audio is optional for successful play and can be disabled without affecting core gameplay outcomes.
 - Host pages embedding the game provide enough visible area for canvas and controls to remain usable.
+- Local and CI execution environments use pnpm-driven scripts backed by tsc, tsx, eslint, prettier, vitest, and vite.

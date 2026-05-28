@@ -55,3 +55,10 @@ Rationale: Audio should enhance experience without impacting game progression or
 Alternatives considered:
 - Mandatory audio initialization: fragile across browsers and accessibility preferences.
 - No audio support: misses stated product tone from README.
+
+## Decision 9: Standardized TypeScript Toolchain
+Decision: Standardize development and CI commands on pnpm + tsc + tsx + eslint + prettier + vitest + vite.
+Rationale: A single toolchain reduces environment drift, simplifies onboarding, and keeps type, lint, format, test, and build steps consistent across contributors.
+Alternatives considered:
+- Mixed npm/yarn usage: increases lockfile churn and command inconsistency.
+- Transpile-then-run script flows without tsx: adds friction for TypeScript utility scripts.

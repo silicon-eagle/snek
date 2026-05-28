@@ -5,7 +5,7 @@ Validate that the feature is implemented according to the specification and cons
 
 ## Prerequisites
 - Node.js 20+
-- npm 10+ (or equivalent package manager)
+- pnpm 9+
 - Modern browser (Chrome, Edge, Firefox, or Safari)
 
 ## 1. Install Dependencies
@@ -13,15 +13,17 @@ Validate that the feature is implemented according to the specification and cons
 2. Confirm linting and test tooling is available.
 
 Example commands:
-- npm install
-- npm run lint
+- pnpm install
+- pnpm lint
+- pnpm format:check
+- pnpm typecheck
 
 ## 2. Run the Application
 1. Start the development server.
 2. Open the local application URL in desktop and mobile viewport emulation.
 
 Example command:
-- npm run dev
+- pnpm dev
 
 ## 3. Validate User Story 1 (Manual Play)
 1. Start a new game session.
@@ -54,9 +56,16 @@ Run required suites:
 - Regression tests for previously fixed defects
 
 Example commands:
-- npm run test
-- npm run test:integration
-- npm run test:contract
+- pnpm test
+- pnpm test:integration
+- pnpm test:contract
+
+## 9. Run TypeScript Utility Scripts
+When running TypeScript utility scripts directly (profiling, diagnostics, data prep),
+execute them with tsx through pnpm scripts.
+
+Example command:
+- pnpm tsx scripts/example-task.ts
 
 ## 8. Performance Verification
 1. Run a 5-minute session in manual mode and autoplay mode.

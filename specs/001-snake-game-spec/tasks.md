@@ -10,17 +10,19 @@
 
 **Detail Level**: Each task includes concrete deliverables and verification expectations so implementation can proceed without additional decomposition.
 
+**Toolchain Standard**: pnpm (package manager), tsc (type checks), tsx (run TypeScript scripts), eslint (lint), prettier (format), vitest (tests), vite (dev/build).
+
 ## Phase 1: Setup (Shared Infrastructure)
 
 **Purpose**: Initialize project tooling and base application entry points.
 
-- [ ] T001 Initialize project scripts and dependency manifest in package.json (add scripts: dev/build/preview/lint/test/test:integration/test:contract, pin core dependencies from plan, and set Node engine constraints)
-- [ ] T002 Configure strict TypeScript compiler settings in tsconfig.json (enable strict mode, noImplicitAny, noUncheckedIndexedAccess, and path aliases used by src/ modules)
-- [ ] T003 [P] Configure Vite + React build setup in vite.config.ts and index.html (wire React plugin, source aliasing, and development server defaults for local gameplay testing)
-- [ ] T004 [P] Configure linting and formatting rules in eslint.config.js and .prettierrc (enforce consistent style, React/TypeScript best practices, and fail-on-error lint behavior)
+- [ ] T001 Initialize project scripts and dependency manifest in package.json (use pnpm scripts: dev/build/preview/typecheck/lint/format/format:check/test/test:integration/test:contract, pin core dependencies, and set Node engine constraints)
+- [ ] T002 Configure strict TypeScript compiler settings in tsconfig.json (enable strict mode, noImplicitAny, noUncheckedIndexedAccess, path aliases, and noEmit typecheck flow via tsc)
+- [ ] T003 [P] Configure Vite + React build setup in vite.config.ts and index.html (wire React plugin, source aliasing, and vite dev server defaults for local gameplay testing)
+- [ ] T004 [P] Configure linting and formatting rules in eslint.config.js and .prettierrc (enforce eslint and prettier consistency, React/TypeScript best practices, and fail-on-error lint behavior)
 - [ ] T005 Create React bootstrap and shell entry points in src/app/bootstrap.tsx and src/app/GameShell.tsx (render root app shell, attach canvas host container, and expose app-level providers)
-- [ ] T006 [P] Configure Vitest and Playwright runners in vitest.config.ts and playwright.config.ts (set test projects, browser targets, reporter output, and coverage collection defaults)
-- [ ] T007 [P] Create shared test setup utilities in tests/setup/vitest.setup.ts and tests/setup/playwright.setup.ts (add fake timer helpers, canvas mocks, and reusable deterministic fixture bootstrapping)
+- [ ] T006 [P] Configure vitest and Playwright runners in vitest.config.ts and playwright.config.ts (set test projects, browser targets, reporter output, and coverage collection defaults)
+- [ ] T007 [P] Create shared test setup utilities in tests/setup/vitest.setup.ts and tests/setup/playwright.setup.ts (add fake timer helpers, canvas mocks, reusable deterministic fixture bootstrapping, and tsx-ready script helpers)
 
 ---
 
@@ -41,7 +43,7 @@
 - [ ] T016 Implement keyboard and touch input adapters in src/controls/keyboard/keyboardController.ts and src/controls/touch/touchController.ts (normalize inputs into one command queue with shared validation)
 - [ ] T017 Implement optional soundtrack service with fallback handling in src/audio/soundtrackService.ts (support play/pause/mute, browser autoplay restrictions, and no-audio fallback path)
 - [ ] T018 [P] Create deterministic state fixtures for tests in tests/unit/core/gameSessionFixtures.ts (provide reusable seeded states for idle/running/won/lost and mode-switch boundaries)
-- [ ] T019 Add foundational unit tests for reducer and rule invariants in tests/unit/core/sessionReducer.test.ts and tests/unit/rules/snakeRules.test.ts (verify deterministic updates and action sequencing)
+- [ ] T019 Add foundational unit tests for reducer and rule invariants in tests/unit/core/sessionReducer.test.ts and tests/unit/rules/snakeRules.test.ts (verify deterministic updates and action sequencing under vitest)
 
 **Checkpoint**: Foundation complete; user stories can proceed.
 
@@ -149,12 +151,12 @@
 
 **Purpose**: Final hardening tasks across all stories.
 
-- [ ] T054 [P] Update product and usage documentation in README.md and specs/001-snake-game-spec/quickstart.md (document manual play, autoplay, mode handoff, and embedding workflow)
-- [ ] T055 Run full lint and typecheck remediation in package.json, tsconfig.json, and eslint.config.js (resolve violations and ensure clean CI-local run)
+- [ ] T054 [P] Update product and usage documentation in README.md and specs/001-snake-game-spec/quickstart.md (document manual play, autoplay, mode handoff, embedding workflow, and standardized pnpm tool commands)
+- [ ] T055 Run full lint/typecheck/format remediation in package.json, tsconfig.json, eslint.config.js, and .prettierrc (resolve violations and ensure clean `pnpm typecheck`, `pnpm lint`, and `pnpm format:check` runs)
 - [ ] T056 Validate UX consistency checklist outputs in tests/integration/session-lifecycle/uxConsistencyChecklist.md (capture keyboard vs touch behavior and desktop/mobile parity evidence)
 - [ ] T057 Optimize frame-timing hotspots in src/rendering/canvas/canvasRenderer.ts and src/core/session/tickScheduler.ts (profile and reduce frame drops under sustained load)
 - [ ] T058 [P] Add automated performance budget regression suite in tests/integration/session-lifecycle/performanceBudget.test.ts (measure FPS, input latency, and memory growth against approved thresholds)
-- [ ] T059 Execute quickstart validation and record evidence in specs/001-snake-game-spec/checklists/quickstart-validation.md (log commands run, results, and onboarding-time observations)
+- [ ] T059 Execute quickstart validation and record evidence in specs/001-snake-game-spec/checklists/quickstart-validation.md (log pnpm commands run, results, and onboarding-time observations)
 - [ ] T060 Harden host-facing input validation paths in src/integration/embed/createSnakeGame.ts and src/integration/embed/embedCallbacks.ts (guard invalid config, callback failures, and lifecycle misuse)
 
 ---
