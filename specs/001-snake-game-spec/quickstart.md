@@ -39,8 +39,8 @@ Example command:
 ## 3. Validate Minimal UI
 
 1. Confirm only two visible elements exist:
-   - square game grid
-   - reset button
+    - square game grid
+    - reset button
 2. Confirm no HUD/status text, no arrow button controls, and no pause/stop/start controls.
 
 ## 4. Validate Keyboard-Only Gameplay

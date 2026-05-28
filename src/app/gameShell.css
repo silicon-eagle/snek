@@ -1,0 +1,53 @@
+html,
+body,
+#root {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    background: #101418;
+    color: #f8f8f8;
+    font-family: "Courier New", Courier, monospace;
+}
+
+.game-shell {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 16px;
+    box-sizing: border-box;
+}
+
+.grid-frame {
+    width: min(88vmin, 640px);
+    aspect-ratio: 1 / 1;
+}
+
+.game-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border: 1px solid #2a323c;
+}
+
+.reset-button {
+    border: 1px solid #3a4552;
+    background: #1a2028;
+    color: inherit;
+    padding: 0.45rem 1rem;
+    font: inherit;
+    cursor: pointer;
+}
+
+.reset-button:hover {
+    background: #212a34;
+}
+
+.reset-button:focus-visible {
+    outline: 2px solid #6ea4ff;
+    outline-offset: 2px;
+}

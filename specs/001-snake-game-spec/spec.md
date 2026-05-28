@@ -8,7 +8,7 @@
 
 **Input**: User direction: "Minimal UI only: square grid, keyboard arrows only, auto-start, reset only, minimal code and abstractions."
 
-## User Scenarios & Testing *(mandatory)*
+## User Scenarios & Testing _(mandatory)_
 
 ### User Story 1 - Play Snake With Arrow Keys Only (Priority: P1)
 
@@ -50,7 +50,7 @@ As a player, I want one reset button so I can immediately restart without extra 
 - Repeated reset presses in quick succession.
 - Viewport resize while preserving a square game grid.
 
-## Requirements *(mandatory)*
+## Requirements _(mandatory)_
 
 ### Functional Requirements
 
@@ -65,7 +65,7 @@ As a player, I want one reset button so I can immediately restart without extra 
 - **FR-009**: UI MUST NOT render HUD text, status text, score text, or instructional text during gameplay.
 - **FR-010**: Implementation MUST minimize unnecessary abstractions and keep logic paths direct and small.
 
-### Architecture & Tooling Constraints *(mandatory)*
+### Architecture & Tooling Constraints _(mandatory)_
 
 - **AT-001**: The project MUST use pnpm as the package manager for dependency management and script execution.
 - **AT-002**: The project MUST use tsc as the authoritative type-checking step and treat type errors as blocking.
@@ -75,27 +75,27 @@ As a player, I want one reset button so I can immediately restart without extra 
 - **AT-006**: The project MUST use vitest as the primary automated test runner for unit and integration-oriented suites.
 - **AT-007**: The project MUST use vite as the application development server and build pipeline.
 
-### User Experience Consistency Requirements *(mandatory)*
+### User Experience Consistency Requirements _(mandatory)_
 
 - **UX-001**: The visible layout MUST remain minimal: centered square grid plus reset button only.
 - **UX-002**: Keyboard arrow behavior MUST be consistent across supported desktop browsers.
 - **UX-003**: Reset action MUST be immediately responsive and predictable.
 - **UX-004**: No extra UI chrome (HUD, overlays, control panels) may appear.
 
-### Performance Requirements *(mandatory)*
+### Performance Requirements _(mandatory)_
 
 - **PRF-001**: During normal gameplay on default settings, the game MUST maintain median frame rate of at least 55 FPS.
 - **PRF-002**: The 95th percentile input-to-visible-movement latency in manual mode MUST be 100 ms or lower.
 - **PRF-003**: Reset action MUST restore a fresh running session in under 100 ms in local test runs.
 
-### Key Entities *(include if feature involves data)*
+### Key Entities _(include if feature involves data)_
 
 - **GameConfig**: Immutable runtime settings (rows, cols, tickMs).
 - **SnakeState**: Ordered segments, heading, pending growth.
 - **FoodState**: Current food coordinate.
 - **GameSession**: Session status, snake, food, score, tick.
 
-## Success Criteria *(mandatory)*
+## Success Criteria _(mandatory)_
 
 ### Measurable Outcomes
 

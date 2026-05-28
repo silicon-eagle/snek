@@ -14,10 +14,10 @@
 
 **Purpose**: Establish the minimal project skeleton and core boundaries.
 
-- [ ] T001 Define minimal domain and session types in src/core/types/gameTypes.ts (running/won/lost, snake, food, score, tick)
-- [ ] T002 Define deterministic grid helpers and food placement primitives in src/core/state/foodSpawner.ts and related state utilities
-- [ ] T003 Create lifecycle boundaries for session updates in src/core/state/sessionReducer.ts and src/core/session/tickScheduler.ts
-- [ ] T004 Create app shell entry points in src/app/bootstrap.tsx and src/app/GameShell.tsx
+- [X] T001 Define minimal domain and session types in src/core/types/gameTypes.ts (running/won/lost, snake, food, score, tick)
+- [X] T002 Define deterministic grid helpers and food placement primitives in src/core/state/foodSpawner.ts and related state utilities
+- [X] T003 Create lifecycle boundaries for session updates in src/core/state/sessionReducer.ts and src/core/session/tickScheduler.ts
+- [X] T004 Create app shell entry points in src/app/bootstrap.tsx and src/app/GameShell.tsx
 
 **Checkpoint**: The foundation clearly defines state, lifecycle flow, and app bootstrap boundaries.
 
@@ -27,11 +27,11 @@
 
 **Purpose**: Implement deterministic snake rules and session behavior.
 
-- [ ] T005 Implement snake movement and growth rules in src/core/rules/snakeRules.ts
-- [ ] T006 Implement terminal-condition evaluation in src/core/rules/terminalConditions.ts (wall collision, self collision, full-grid win)
-- [ ] T007 Implement session engine orchestration in src/core/session/gameSession.ts (tick loop + state transitions)
-- [ ] T008 Implement reset flow in src/core/session/gameSession.ts and src/core/state/sessionReducer.ts (fresh running session on demand)
-- [ ] T009 Implement arrow-key-only controller in src/controls/keyboard/keyboardController.ts (ignore non-arrow input, reject immediate reverse)
+- [X] T005 Implement snake movement and growth rules in src/core/rules/snakeRules.ts
+- [X] T006 Implement terminal-condition evaluation in src/core/rules/terminalConditions.ts (wall collision, self collision, full-grid win)
+- [X] T007 Implement session engine orchestration in src/core/session/gameSession.ts (tick loop + state transitions)
+- [X] T008 Implement reset flow in src/core/session/gameSession.ts and src/core/state/sessionReducer.ts (fresh running session on demand)
+- [X] T009 Implement arrow-key-only controller in src/controls/keyboard/keyboardController.ts (ignore non-arrow input, reject immediate reverse)
 
 **Checkpoint**: Gameplay runs deterministically with keyboard input and a reliable reset path.
 
@@ -41,10 +41,10 @@
 
 **Purpose**: Deliver the intentional minimal interaction surface.
 
-- [ ] T010 Implement square-grid rendering in src/rendering/canvas/canvasRenderer.ts (grid, snake, food only)
-- [ ] T011 Implement minimal shell layout in src/app/GameShell.tsx and src/app/gameShell.css (centered square grid + single reset button)
-- [ ] T012 Wire automatic game start on initial load in src/app/bootstrap.tsx and src/app/GameShell.tsx
-- [ ] T013 Wire reset button to immediate new running session in src/app/GameShell.tsx
+- [X] T010 Implement square-grid rendering in src/rendering/canvas/canvasRenderer.ts (grid, snake, food only)
+- [X] T011 Implement minimal shell layout in src/app/GameShell.tsx and src/app/gameShell.css (centered square grid + single reset button)
+- [X] T012 Wire automatic game start on initial load in src/app/bootstrap.tsx and src/app/GameShell.tsx
+- [X] T013 Wire reset button to immediate new running session in src/app/GameShell.tsx
 
 **Checkpoint**: The visible UI is exactly a square grid and one reset button.
 
@@ -54,12 +54,12 @@
 
 **Purpose**: Validate behavior and lock the minimal scope.
 
-- [ ] T014 [P] Add reducer/session unit tests in tests/unit/core/sessionReducer.test.ts and tests/unit/core/gameSessionFixtures.ts
-- [ ] T015 [P] Add snake-rule unit tests in tests/unit/rules/snakeRules.test.ts (movement, growth, collisions)
-- [ ] T016 [P] Add keyboard input unit tests for arrow-only behavior and reverse-direction guard
-- [ ] T017 [P] Add integration test for auto-start lifecycle in tests/integration/session-lifecycle/manualKeyboardFlow.test.ts
-- [ ] T018 [P] Add integration test for reset behavior from running and terminal states in tests/integration/session-lifecycle/resetFlow.test.ts
-- [ ] T019 [P] Add integration test asserting minimal UI surface in tests/integration/session-lifecycle/minimalUiSurface.test.ts
+- [X] T014 [P] Add reducer/session unit tests in tests/unit/core/sessionReducer.test.ts and tests/unit/core/gameSessionFixtures.ts
+- [X] T015 [P] Add snake-rule unit tests in tests/unit/rules/snakeRules.test.ts (movement, growth, collisions)
+- [X] T016 [P] Add keyboard input unit tests for arrow-only behavior and reverse-direction guard
+- [X] T017 [P] Add integration test for auto-start lifecycle in tests/integration/session-lifecycle/manualKeyboardFlow.test.ts
+- [X] T018 [P] Add integration test for reset behavior from running and terminal states in tests/integration/session-lifecycle/resetFlow.test.ts
+- [X] T019 [P] Add integration test asserting minimal UI surface in tests/integration/session-lifecycle/minimalUiSurface.test.ts
 
 **Checkpoint**: Tests confirm keyboard-only control, auto-start, reset behavior, and minimal UI constraints.
 
@@ -69,9 +69,9 @@
 
 **Purpose**: Align docs and complete quality gates for design-to-build handoff.
 
-- [ ] T020 Document user flow in specs/001-snake-game-spec/quickstart.md and README.md (auto-start, arrow keys, reset)
-- [ ] T021 Document architecture and data model in specs/001-snake-game-spec/plan.md and specs/001-snake-game-spec/data-model.md
-- [ ] T022 Run quality gates with pnpm format, pnpm lint, pnpm typecheck, pnpm test, and pnpm test:integration; record results in specs/001-snake-game-spec/checklists/quickstart-validation.md
+- [X] T020 Document user flow in specs/001-snake-game-spec/quickstart.md and README.md (auto-start, arrow keys, reset)
+- [X] T021 Document architecture and data model in specs/001-snake-game-spec/plan.md and specs/001-snake-game-spec/data-model.md
+- [X] T022 Run quality gates with pnpm format, pnpm lint, pnpm typecheck, pnpm test, and pnpm test:integration; record results in specs/001-snake-game-spec/checklists/quickstart-validation.md
 
 ---
 
