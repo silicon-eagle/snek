@@ -22,9 +22,19 @@ body {
     box-sizing: border-box;
 }
 
+.game-shell[data-session-status="lost"] {
+    color: #ffd8d8;
+}
+
 .grid-frame {
     width: min(88vmin, 640px);
     aspect-ratio: 1 / 1;
+    border: 1px solid transparent;
+    transition: border-color 0.15s ease;
+}
+
+.game-shell[data-session-status="lost"] .grid-frame {
+    border-color: #7a1d1d;
 }
 
 .game-canvas {
@@ -32,6 +42,10 @@ body {
     height: 100%;
     display: block;
     border: 1px solid #2a323c;
+}
+
+.game-shell[data-session-status="lost"] .game-canvas {
+    border-color: #8f2323;
 }
 
 .reset-button {
@@ -45,6 +59,16 @@ body {
 
 .reset-button:hover {
     background: #212a34;
+}
+
+.game-shell[data-session-status="lost"] .reset-button {
+    border-color: #8f2323;
+    background: #3f1515;
+    color: #ffe4e4;
+}
+
+.game-shell[data-session-status="lost"] .reset-button:hover {
+    background: #4f1b1b;
 }
 
 .reset-button:focus-visible {

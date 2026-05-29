@@ -30,15 +30,42 @@ describe("sessionReducer", () => {
         expect(next.tick).toBe(1);
     });
 
-    it("transitions to lost on wall collision", () => {
+    it("wraps across the border instead of losing", () => {
         const smallConfig: GameConfig = { rows: 4, cols: 4, tickMs: 100 };
         let session = createInitialSession(smallConfig);
 
-        for (let step = 0; step < 4; step += 1) {
+        for (let step = 0; step < 2; step += 1) {
             session = reduceSession(session, { type: "TICK" });
         }
 
-        expect(session.status).toBe("lost");
+        expect(session.status).toBe("running");
+        expect(session.snake.segments[0]).toEqual({ x: 0, y: 2 });
+    });
+
+    it("transitions to lost when wrapped head overlaps the body", () => {
+        const config: GameConfig = { rows: 5, cols: 5, tickMs: 100 };
+        const session = {
+            ...createInitialSession(config),
+            status: "running" as const,
+            snake: {
+                segments: [
+                    { x: 4, y: 2 },
+                    { x: 0, y: 2 },
+                    { x: 0, y: 3 }
+                ],
+                heading: "right" as const,
+                pendingGrowth: 0
+            },
+            food: {
+                position: { x: 1, y: 1 }
+            }
+        };
+
+        const next = reduceSession(session, { type: "TICK" });
+
+        expect(session.status).toBe("running");
+        expect(next.status).toBe("lost");
+        expect(next.tick).toBe(session.tick + 1);
     });
 
     it("creates a fresh running session on reset", () => {

@@ -1,0 +1,3 @@
+export const LOSS_RESTART_DELAY_MS = 3000;
+export const LOSS_RESTART_WINDOW_MIN_MS = 2500;
+export const LOSS_RESTART_WINDOW_MAX_MS = 3500;

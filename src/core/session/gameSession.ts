@@ -1,8 +1,10 @@
 import { TickScheduler } from "./tickScheduler";
+import { LOSS_RESTART_DELAY_MS } from "./sessionConstants";
 import { createInitialSession, reduceSession } from "../state/sessionReducer";
-import type { Direction, GameConfig, GameSession, SessionAction } from "../types/gameTypes";
+import type { Direction, GameConfig, GameSession, LossRecoveryState, SessionAction } from "../types/gameTypes";
 
 type SessionListener = (session: GameSession) => void;
+type TimeoutHandle = ReturnType<typeof setTimeout>;
 
 /**
  * Coordinates reducer updates, tick scheduling, and state subscriptions.
@@ -11,6 +13,8 @@ export class GameSessionController {
     private readonly scheduler: TickScheduler;
     private readonly listeners = new Set<SessionListener>();
     private session: GameSession;
+    private restartTimeoutId: TimeoutHandle | null = null;
+    private lossRecovery: LossRecoveryState | null = null;
 
     public constructor(config: GameConfig) {
         this.scheduler = new TickScheduler(config.tickMs);
@@ -35,6 +39,7 @@ export class GameSessionController {
      */
     public dispose(): void {
         this.scheduler.stop();
+        this.cancelPendingRestart();
         this.listeners.clear();
     }
 
@@ -68,13 +73,22 @@ export class GameSessionController {
      * Resets to a newly initialized running session.
      */
     public reset(): void {
+        this.cancelPendingRestart();
         this.dispatch({ type: "RESET" });
+    }
+
+    /**
+     * Exposes recovery metadata for timing-focused tests.
+     */
+    public getLossRecoveryState(): LossRecoveryState | null {
+        return this.lossRecovery;
     }
 
     /**
      * Runs one reducer step and notifies listeners on state changes.
      */
     private dispatch(action: SessionAction): void {
+        const previousSession = this.session;
         const nextSession = reduceSession(this.session, action);
 
         if (nextSession === this.session) {
@@ -82,7 +96,68 @@ export class GameSessionController {
         }
 
         this.session = nextSession;
+        this.syncRecoveryLifecycle(previousSession, nextSession, action);
         this.notify();
+    }
+
+    /**
+     * Keeps delayed restart scheduling in sync with status transitions.
+     */
+    private syncRecoveryLifecycle(previousSession: GameSession, nextSession: GameSession, action: SessionAction): void {
+        if (action.type === "RESET") {
+            this.cancelPendingRestart();
+            return;
+        }
+
+        if (previousSession.status !== "lost" && nextSession.status === "lost") {
+            this.scheduleAutoRestart(nextSession);
+            return;
+        }
+
+        if (previousSession.status === "lost" && nextSession.status !== "lost") {
+            this.cancelPendingRestart();
+        }
+    }
+
+    /**
+     * Schedules one automatic reset for the current loss event.
+     */
+    private scheduleAutoRestart(lostSession: GameSession): void {
+        this.cancelPendingRestart();
+
+        const lossDetectedAtMs = Date.now();
+        this.lossRecovery = {
+            activeSessionId: lostSession.id,
+            lossDetectedAtMs,
+            restartDelayMs: LOSS_RESTART_DELAY_MS,
+            restartDueAtMs: lossDetectedAtMs + LOSS_RESTART_DELAY_MS,
+            pending: true
+        };
+
+        this.restartTimeoutId = setTimeout(() => {
+            if (!this.lossRecovery || this.lossRecovery.activeSessionId !== lostSession.id) {
+                return;
+            }
+
+            if (this.session.id !== lostSession.id || this.session.status !== "lost") {
+                this.cancelPendingRestart();
+                return;
+            }
+
+            this.dispatch({ type: "RESET" });
+        }, LOSS_RESTART_DELAY_MS);
+    }
+
+    /**
+     * Cancels any pending delayed restart and clears metadata.
+     */
+    private cancelPendingRestart(): void {
+        if (this.restartTimeoutId !== null) {
+            clearTimeout(this.restartTimeoutId);
+            this.restartTimeoutId = null;
+        }
+
+        this.lossRecovery = null;
     }
 
     /**

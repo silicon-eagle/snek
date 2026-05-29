@@ -33,6 +33,14 @@ export interface GameSession {
     food: FoodState;
 }
 
+export interface LossRecoveryState {
+    activeSessionId: string;
+    lossDetectedAtMs: number;
+    restartDelayMs: number;
+    restartDueAtMs: number;
+    pending: boolean;
+}
+
 export type SessionAction =
     | {
           type: "TURN";

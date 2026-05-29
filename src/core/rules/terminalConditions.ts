@@ -8,6 +8,17 @@ export function isOutOfBounds(point: GridCoordinate, config: GameConfig): boolea
 }
 
 /**
+ * Reports whether crossing a boundary should end the session.
+ */
+export function isBoundaryLoss(point: GridCoordinate, config: GameConfig, wrapsEnabled: boolean): boolean {
+    if (wrapsEnabled) {
+        return false;
+    }
+
+    return isOutOfBounds(point, config);
+}
+
+/**
  * Returns true when the head overlaps any existing snake segment.
  */
 export function isSelfCollision(head: GridCoordinate, segments: GridCoordinate[]): boolean {

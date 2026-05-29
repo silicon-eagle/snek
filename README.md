@@ -6,6 +6,9 @@ Minimal snake game built with TypeScript, React, Vite, and HTML Canvas.
 
 - Auto-starts on load
 - Arrow keys control movement
+- Snake wraps through borders to the opposite side
+- On loss, gameplay surface switches to red visuals
+- After loss, game auto-restarts in about 3 seconds
 - Single reset button
 - UI is only square grid plus reset
 - No HUD text, no autoplay controls, no pause/stop/start controls

@@ -3,7 +3,8 @@ import {
     advanceSnake,
     getNextHeadPosition,
     isOppositeDirection,
-    isTurnAllowed
+    isTurnAllowed,
+    wrapCoordinateToBounds
 } from "../../../src/core/rules/snakeRules";
 
 describe("snakeRules", () => {
@@ -42,5 +43,14 @@ describe("snakeRules", () => {
 
         expect(grown.segments).toHaveLength(4);
         expect(moved.segments).toHaveLength(4);
+    });
+
+    it("wraps coordinates to the opposite border", () => {
+        const config = { rows: 6, cols: 8, tickMs: 100 };
+
+        expect(wrapCoordinateToBounds({ x: 8, y: 2 }, config)).toEqual({ x: 0, y: 2 });
+        expect(wrapCoordinateToBounds({ x: -1, y: 2 }, config)).toEqual({ x: 7, y: 2 });
+        expect(wrapCoordinateToBounds({ x: 3, y: 6 }, config)).toEqual({ x: 3, y: 0 });
+        expect(wrapCoordinateToBounds({ x: 3, y: -1 }, config)).toEqual({ x: 3, y: 5 });
     });
 });

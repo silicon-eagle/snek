@@ -115,11 +115,11 @@ export function GameShell(): JSX.Element {
     }, []);
 
     return (
-        <main className="game-shell">
+        <main className="game-shell" data-session-status={status}>
             <div className="grid-frame" ref={frameRef} data-session-status={status}>
-                <canvas className="game-canvas" ref={canvasRef} aria-label="game-grid" />
+                <canvas className="game-canvas" ref={canvasRef} aria-label="game-grid" data-session-status={status} />
             </div>
-            <button type="button" className="reset-button" onClick={onReset}>
+            <button type="button" className="reset-button" data-session-status={status} onClick={onReset}>
                 Reset
             </button>
         </main>

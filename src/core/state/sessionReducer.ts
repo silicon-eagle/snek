@@ -1,5 +1,5 @@
-import { advanceSnake, getNextHeadPosition, isTurnAllowed } from "../rules/snakeRules";
-import { isOutOfBounds, isSelfCollision, isWinState } from "../rules/terminalConditions";
+import { advanceSnake, getNextHeadPosition, isTurnAllowed, wrapCoordinateToBounds } from "../rules/snakeRules";
+import { isBoundaryLoss, isSelfCollision, isWinState } from "../rules/terminalConditions";
 import { createDeterministicFoodPosition, isSameCoordinate } from "./foodSpawner";
 import type { GameConfig, GameSession, SessionAction } from "../types/gameTypes";
 
@@ -95,7 +95,8 @@ export function reduceSession(session: GameSession, action: SessionAction): Game
         };
     }
 
-    const nextHead = getNextHeadPosition(currentHead, session.snake.heading);
+    const candidateHead = getNextHeadPosition(currentHead, session.snake.heading);
+    const nextHead = wrapCoordinateToBounds(candidateHead, session.config);
     const ateFood = isSameCoordinate(nextHead, session.food.position);
 
     const collisionBody =
@@ -103,7 +104,7 @@ export function reduceSession(session: GameSession, action: SessionAction): Game
             ? session.snake.segments
             : session.snake.segments.slice(0, session.snake.segments.length - 1);
 
-    if (isOutOfBounds(nextHead, session.config) || isSelfCollision(nextHead, collisionBody)) {
+    if (isBoundaryLoss(candidateHead, session.config, true) || isSelfCollision(nextHead, collisionBody)) {
         return {
             ...session,
             status: "lost",

@@ -1,4 +1,4 @@
-import type { Direction, GridCoordinate, SnakeState } from "../types/gameTypes";
+import type { Direction, GameConfig, GridCoordinate, SnakeState } from "../types/gameTypes";
 
 const DIRECTION_DELTA: Record<Direction, GridCoordinate> = {
     up: { x: 0, y: -1 },
@@ -38,6 +38,19 @@ export function getNextHeadPosition(head: GridCoordinate, heading: Direction): G
     return {
         x: head.x + delta.x,
         y: head.y + delta.y
+    };
+}
+
+/**
+ * Wraps coordinates around grid borders to the opposite side.
+ */
+export function wrapCoordinateToBounds(point: GridCoordinate, config: GameConfig): GridCoordinate {
+    const wrappedX = ((point.x % config.cols) + config.cols) % config.cols;
+    const wrappedY = ((point.y % config.rows) + config.rows) % config.rows;
+
+    return {
+        x: wrappedX,
+        y: wrappedY
     };
 }
 

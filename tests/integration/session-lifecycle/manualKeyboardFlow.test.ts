@@ -20,4 +20,20 @@ describe("manual keyboard flow", () => {
 
         expect(frame).toHaveAttribute("data-session-status", "running");
     });
+
+    it("keeps running after crossing the right border", () => {
+        vi.useFakeTimers();
+        render(createElement(GameShell));
+
+        const canvas = screen.getByLabelText("game-grid");
+        const frame = canvas.parentElement;
+
+        expect(frame).toHaveAttribute("data-session-status", "running");
+
+        act(() => {
+            vi.advanceTimersByTime(1500);
+        });
+
+        expect(frame).toHaveAttribute("data-session-status", "running");
+    });
 });
