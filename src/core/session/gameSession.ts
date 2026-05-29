@@ -1,7 +1,14 @@
 import { TickScheduler } from "./tickScheduler";
 import { LOSS_RESTART_DELAY_MS } from "./sessionConstants";
 import { createInitialSession, reduceSession } from "../state/sessionReducer";
-import type { Direction, GameConfig, GameSession, LossRecoveryState, SessionAction } from "../types/gameTypes";
+import type {
+    ControlOwner,
+    Direction,
+    GameConfig,
+    GameSession,
+    LossRecoveryState,
+    SessionAction
+} from "../types/gameTypes";
 
 type SessionListener = (session: GameSession) => void;
 type TimeoutHandle = ReturnType<typeof setTimeout>;
@@ -63,10 +70,29 @@ export class GameSessionController {
     }
 
     /**
+     * Returns which control owner currently drives movement decisions.
+     */
+    public getControlOwner(): ControlOwner {
+        return this.session.controlMode.owner;
+    }
+
+    /**
      * Applies a direction change action.
      */
     public turn(direction: Direction): void {
         this.dispatch({ type: "TURN", direction });
+    }
+
+    /**
+     * Overrides control ownership metadata for orchestration and tests.
+     */
+    public setControlOwner(owner: ControlOwner, switchedAtTick?: number | null): void {
+        const action: SessionAction = { type: "SET_CONTROL_OWNER", owner };
+        if (switchedAtTick !== undefined) {
+            action.switchedAtTick = switchedAtTick;
+        }
+
+        this.dispatch(action);
     }
 
     /**
@@ -82,6 +108,25 @@ export class GameSessionController {
      */
     public getLossRecoveryState(): LossRecoveryState | null {
         return this.lossRecovery;
+    }
+
+    /**
+     * Forces a loss transition for deterministic integration tests.
+     */
+    public forceLossForTests(): void {
+        if (this.session.status === "lost") {
+            return;
+        }
+
+        const previousSession = this.session;
+        this.session = {
+            ...this.session,
+            status: "lost",
+            tick: this.session.tick + 1
+        };
+
+        this.syncRecoveryLifecycle(previousSession, this.session, { type: "TICK" });
+        this.notify();
     }
 
     /**

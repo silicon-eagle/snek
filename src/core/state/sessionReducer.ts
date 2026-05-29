@@ -1,7 +1,10 @@
 import { advanceSnake, getNextHeadPosition, isTurnAllowed, wrapCoordinateToBounds } from "../rules/snakeRules";
 import { isBoundaryLoss, isSelfCollision, isWinState } from "../rules/terminalConditions";
-import { createDeterministicFoodPosition, isSameCoordinate } from "./foodSpawner";
-import type { GameConfig, GameSession, SessionAction } from "../types/gameTypes";
+import { CONTROL_OWNER_AUTONOMOUS, CONTROL_OWNER_MANUAL } from "../session/sessionConstants";
+import { createAutoplayStep } from "../strategy/autoplayController";
+import { createHamiltonianRouteState, getRouteStepByCell } from "../strategy/hamiltonianCycle";
+import { createFoodState, isSameCoordinate } from "./foodSpawner";
+import type { GameConfig, GameSession, GridCoordinate, HamiltonianRouteState, SessionAction } from "../types/gameTypes";
 
 let sessionCounter = 0;
 
@@ -28,6 +31,21 @@ function createInitialSegments(config: GameConfig) {
 }
 
 /**
+ * Syncs route position metadata with the latest head coordinate when available.
+ */
+function syncRouteStep(route: HamiltonianRouteState, head: GridCoordinate): HamiltonianRouteState {
+    const nextStep = getRouteStepByCell(route.indexByCell, head);
+    if (nextStep === null || nextStep === route.currentRouteStep) {
+        return route;
+    }
+
+    return {
+        ...route,
+        currentRouteStep: nextStep
+    };
+}
+
+/**
  * Resets the session-id counter for deterministic tests.
  */
 export function resetSessionCounterForTests(): void {
@@ -39,6 +57,8 @@ export function resetSessionCounterForTests(): void {
  */
 export function createInitialSession(config: GameConfig): GameSession {
     const segments = createInitialSegments(config);
+    const route = createHamiltonianRouteState(config, segments[0]!);
+    const food = createFoodState(config, segments, { strategy: "random" });
 
     return {
         id: nextSessionId(),
@@ -46,14 +66,17 @@ export function createInitialSession(config: GameConfig): GameSession {
         score: 0,
         tick: 0,
         config,
+        controlMode: {
+            owner: CONTROL_OWNER_AUTONOMOUS,
+            switchedAtTick: null
+        },
         snake: {
             segments,
             heading: "right",
             pendingGrowth: 0
         },
-        food: {
-            position: createDeterministicFoodPosition(config, segments)
-        }
+        food,
+        route
     };
 }
 
@@ -65,6 +88,21 @@ export function reduceSession(session: GameSession, action: SessionAction): Game
         return createInitialSession(session.config);
     }
 
+    if (action.type === "SET_CONTROL_OWNER") {
+        const switchedAtTick = action.switchedAtTick ?? session.controlMode.switchedAtTick;
+        if (session.controlMode.owner === action.owner && session.controlMode.switchedAtTick === switchedAtTick) {
+            return session;
+        }
+
+        return {
+            ...session,
+            controlMode: {
+                owner: action.owner,
+                switchedAtTick
+            }
+        };
+    }
+
     if (action.type === "TURN") {
         if (session.status !== "running") {
             return session;
@@ -74,8 +112,17 @@ export function reduceSession(session: GameSession, action: SessionAction): Game
             return session;
         }
 
+        const nextControlMode =
+            session.controlMode.owner === CONTROL_OWNER_MANUAL
+                ? session.controlMode
+                : {
+                      owner: CONTROL_OWNER_MANUAL,
+                      switchedAtTick: session.tick + 1
+                  };
+
         return {
             ...session,
+            controlMode: nextControlMode,
             snake: {
                 ...session.snake,
                 heading: action.direction
@@ -95,8 +142,23 @@ export function reduceSession(session: GameSession, action: SessionAction): Game
         };
     }
 
-    const candidateHead = getNextHeadPosition(currentHead, session.snake.heading);
+    let nextHeading = session.snake.heading;
+    let nextRoute = session.route;
+
+    if (session.controlMode.owner === CONTROL_OWNER_AUTONOMOUS) {
+        const autoplayStep = createAutoplayStep(session.route, currentHead, session.config);
+        if (autoplayStep) {
+            nextHeading = autoplayStep.direction;
+            nextRoute = {
+                ...session.route,
+                currentRouteStep: autoplayStep.nextRouteStep
+            };
+        }
+    }
+
+    const candidateHead = getNextHeadPosition(currentHead, nextHeading);
     const nextHead = wrapCoordinateToBounds(candidateHead, session.config);
+    nextRoute = syncRouteStep(nextRoute, nextHead);
     const ateFood = isSameCoordinate(nextHead, session.food.position);
 
     const collisionBody =
@@ -108,7 +170,12 @@ export function reduceSession(session: GameSession, action: SessionAction): Game
         return {
             ...session,
             status: "lost",
-            tick: session.tick + 1
+            tick: session.tick + 1,
+            route: nextRoute,
+            snake: {
+                ...session.snake,
+                heading: nextHeading
+            }
         };
     }
 
@@ -120,28 +187,38 @@ export function reduceSession(session: GameSession, action: SessionAction): Game
     if (won) {
         return {
             ...session,
-            snake: nextSnake,
+            snake: {
+                ...nextSnake,
+                heading: nextHeading
+            },
             score: nextScore,
             tick: nextTick,
-            status: "won"
+            status: "won",
+            route: nextRoute
         };
     }
 
     if (!ateFood) {
         return {
             ...session,
-            snake: nextSnake,
-            tick: nextTick
+            snake: {
+                ...nextSnake,
+                heading: nextHeading
+            },
+            tick: nextTick,
+            route: nextRoute
         };
     }
 
     return {
         ...session,
-        snake: nextSnake,
+        snake: {
+            ...nextSnake,
+            heading: nextHeading
+        },
         score: nextScore,
         tick: nextTick,
-        food: {
-            position: createDeterministicFoodPosition(session.config, nextSnake.segments)
-        }
+        route: nextRoute,
+        food: createFoodState(session.config, nextSnake.segments, { strategy: "random" })
     };
 }

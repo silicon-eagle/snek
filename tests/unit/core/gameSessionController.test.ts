@@ -1,7 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { GameSessionController } from "../../../src/core/session/gameSession";
 import { LOSS_RESTART_DELAY_MS } from "../../../src/core/session/sessionConstants";
-import type { Direction } from "../../../src/core/types/gameTypes";
 import { TEST_CONFIG } from "./gameSessionFixtures";
 
 function advanceTicks(tickCount: number): void {
@@ -9,22 +8,7 @@ function advanceTicks(tickCount: number): void {
 }
 
 function forceDeterministicLoss(controller: GameSessionController): void {
-    const initialHead = controller.getSnapshot().snake.segments[0];
-    if (!initialHead) {
-        throw new Error("missing snake head in forceDeterministicLoss");
-    }
-
-    const issueTurnAndTick = (direction: Direction, ticks = 1) => {
-        controller.turn(direction);
-        advanceTicks(ticks);
-    };
-
-    const ticksToWrapX = TEST_CONFIG.cols - initialHead.x;
-    advanceTicks(ticksToWrapX);
-    issueTurnAndTick("up", initialHead.y);
-    issueTurnAndTick("right", 1);
-    issueTurnAndTick("down", 1);
-    issueTurnAndTick("left", 1);
+    controller.forceLossForTests();
 }
 
 describe("GameSessionController", () => {
@@ -39,8 +23,30 @@ describe("GameSessionController", () => {
         controller.start();
 
         expect(observedStatuses.at(-1)).toBe("running");
+        expect(controller.getControlOwner()).toBe("autonomous");
 
         unsubscribe();
+        controller.dispose();
+    });
+
+    it("returns to autonomous mode after manual-loss auto-restart", () => {
+        vi.useFakeTimers();
+        const controller = new GameSessionController(TEST_CONFIG);
+
+        controller.start();
+        controller.turn("up");
+        advanceTicks(1);
+
+        expect(controller.getControlOwner()).toBe("manual");
+
+        forceDeterministicLoss(controller);
+        expect(controller.getSnapshot().status).toBe("lost");
+
+        vi.advanceTimersByTime(LOSS_RESTART_DELAY_MS);
+
+        expect(controller.getSnapshot().status).toBe("running");
+        expect(controller.getControlOwner()).toBe("autonomous");
+
         controller.dispose();
     });
 
@@ -94,6 +100,27 @@ describe("GameSessionController", () => {
         vi.advanceTimersByTime(LOSS_RESTART_DELAY_MS + 2000);
         expect(controller.getSnapshot().status).toBe("running");
         expect(controller.getSnapshot().id).toBe(resetSessionId);
+
+        controller.dispose();
+    });
+
+    it("ignores stale restart callback after manual reset", () => {
+        vi.useFakeTimers();
+        const controller = new GameSessionController(TEST_CONFIG);
+
+        controller.start();
+        forceDeterministicLoss(controller);
+
+        expect(controller.getSnapshot().status).toBe("lost");
+
+        controller.reset();
+        const resetSessionId = controller.getSnapshot().id;
+
+        vi.advanceTimersByTime(LOSS_RESTART_DELAY_MS + 5);
+
+        expect(controller.getSnapshot().status).toBe("running");
+        expect(controller.getSnapshot().id).toBe(resetSessionId);
+        expect(controller.getControlOwner()).toBe("autonomous");
 
         controller.dispose();
     });

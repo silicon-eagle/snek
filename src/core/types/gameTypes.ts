@@ -2,6 +2,10 @@ export type Direction = "up" | "down" | "left" | "right";
 
 export type GameStatus = "running" | "won" | "lost";
 
+export type ControlOwner = "autonomous" | "manual";
+
+export type FoodSpawnSource = "deterministicScan" | "randomFree";
+
 export interface GameConfig {
     rows: number;
     cols: number;
@@ -21,6 +25,20 @@ export interface SnakeState {
 
 export interface FoodState {
     position: GridCoordinate;
+    freeCellCount: number;
+    source: FoodSpawnSource;
+}
+
+export interface ControlModeState {
+    owner: ControlOwner;
+    switchedAtTick: number | null;
+}
+
+export interface HamiltonianRouteState {
+    cycle: GridCoordinate[];
+    indexByCell: Record<string, number>;
+    currentRouteStep: number;
+    supported: boolean;
 }
 
 export interface GameSession {
@@ -29,8 +47,10 @@ export interface GameSession {
     score: number;
     tick: number;
     config: GameConfig;
+    controlMode: ControlModeState;
     snake: SnakeState;
     food: FoodState;
+    route: HamiltonianRouteState;
 }
 
 export interface LossRecoveryState {
@@ -45,6 +65,11 @@ export type SessionAction =
     | {
           type: "TURN";
           direction: Direction;
+      }
+    | {
+          type: "SET_CONTROL_OWNER";
+          owner: ControlOwner;
+          switchedAtTick?: number | null;
       }
     | {
           type: "TICK";

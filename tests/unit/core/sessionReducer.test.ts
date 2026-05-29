@@ -17,6 +17,16 @@ describe("sessionReducer", () => {
         const session = createRunningSession();
         const next = reduceSession(session, { type: "TURN", direction: "left" });
         expect(next.snake.heading).toBe("right");
+        expect(next.controlMode.owner).toBe("autonomous");
+    });
+
+    it("switches to manual ownership on valid interception", () => {
+        const session = createRunningSession();
+        const next = reduceSession(session, { type: "TURN", direction: "up" });
+
+        expect(next.controlMode.owner).toBe("manual");
+        expect(next.controlMode.switchedAtTick).toBe(session.tick + 1);
+        expect(next.snake.heading).toBe("up");
     });
 
     it("moves the head forward on each tick", () => {
@@ -33,6 +43,8 @@ describe("sessionReducer", () => {
     it("wraps across the border instead of losing", () => {
         const smallConfig: GameConfig = { rows: 4, cols: 4, tickMs: 100 };
         let session = createInitialSession(smallConfig);
+
+        session = reduceSession(session, { type: "SET_CONTROL_OWNER", owner: "manual" });
 
         for (let step = 0; step < 2; step += 1) {
             session = reduceSession(session, { type: "TICK" });
@@ -57,7 +69,9 @@ describe("sessionReducer", () => {
                 pendingGrowth: 0
             },
             food: {
-                position: { x: 1, y: 1 }
+                position: { x: 1, y: 1 },
+                freeCellCount: 22,
+                source: "deterministicScan" as const
             }
         };
 
@@ -70,11 +84,23 @@ describe("sessionReducer", () => {
 
     it("creates a fresh running session on reset", () => {
         let session = createRunningSession();
+        session = reduceSession(session, { type: "TURN", direction: "up" });
         session = reduceSession(session, { type: "TICK" });
         session = reduceSession(session, { type: "RESET" });
 
         expect(session.status).toBe("running");
+        expect(session.controlMode.owner).toBe("autonomous");
         expect(session.score).toBe(0);
         expect(session.tick).toBe(0);
+    });
+
+    it("keeps manual ownership active until round end", () => {
+        let session = createRunningSession();
+        session = reduceSession(session, { type: "TURN", direction: "up" });
+
+        for (let step = 0; step < 5; step += 1) {
+            session = reduceSession(session, { type: "TICK" });
+            expect(session.controlMode.owner).toBe("manual");
+        }
     });
 });

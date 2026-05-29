@@ -231,3 +231,4 @@ Thumbs.db
 *.tmp
 *.swp
 .idea/
+.vscode/

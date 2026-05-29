@@ -1,8 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { KeyboardController } from "../controls/keyboard/keyboardController";
 import { GameSessionController } from "../core/session/gameSession";
-import { DEFAULT_CONFIG, type GameStatus } from "../core/types/gameTypes";
+import { DEFAULT_CONFIG, type ControlOwner, type GameStatus } from "../core/types/gameTypes";
 import { CanvasRenderer } from "../rendering/canvas/canvasRenderer";
+
+interface GameShellProps {
+    controller?: GameSessionController;
+}
 
 /**
  * Keeps the canvas square by syncing renderer size with the frame container.
@@ -51,12 +55,13 @@ function useGridResize(
 /**
  * Renders the minimal snake UI: game grid plus reset button.
  */
-export function GameShell(): JSX.Element {
+export function GameShell(props: GameShellProps): JSX.Element {
     const frameRef = useRef<HTMLDivElement | null>(null);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const controllerRef = useRef<GameSessionController | null>(null);
     const rendererRef = useRef<CanvasRenderer | null>(null);
     const [status, setStatus] = useState<GameStatus>("running");
+    const [controlOwner, setControlOwner] = useState<ControlOwner>("autonomous");
 
     /**
      * Re-renders the canvas from the latest in-memory game snapshot.
@@ -79,7 +84,8 @@ export function GameShell(): JSX.Element {
             return;
         }
 
-        const controller = new GameSessionController(DEFAULT_CONFIG);
+        const controller = props.controller ?? new GameSessionController(DEFAULT_CONFIG);
+        const ownsController = !props.controller;
         const renderer = new CanvasRenderer(canvas, DEFAULT_CONFIG);
         const keyboard = new KeyboardController(
             () => controller.getSnapshot().snake.heading,
@@ -91,6 +97,7 @@ export function GameShell(): JSX.Element {
 
         const unsubscribe = controller.subscribe((session) => {
             setStatus(session.status);
+            setControlOwner(session.controlMode.owner);
             renderer.render(session);
         });
 
@@ -100,12 +107,15 @@ export function GameShell(): JSX.Element {
         return () => {
             unsubscribe();
             keyboard.detach();
-            controller.dispose();
+
+            if (ownsController) {
+                controller.dispose();
+            }
 
             controllerRef.current = null;
             rendererRef.current = null;
         };
-    }, []);
+    }, [props.controller]);
 
     /**
      * Resets the current session and starts a fresh running game.
@@ -115,11 +125,23 @@ export function GameShell(): JSX.Element {
     }, []);
 
     return (
-        <main className="game-shell" data-session-status={status}>
-            <div className="grid-frame" ref={frameRef} data-session-status={status}>
-                <canvas className="game-canvas" ref={canvasRef} aria-label="game-grid" data-session-status={status} />
+        <main className="game-shell" data-session-status={status} data-control-owner={controlOwner}>
+            <div className="grid-frame" ref={frameRef} data-session-status={status} data-control-owner={controlOwner}>
+                <canvas
+                    className="game-canvas"
+                    ref={canvasRef}
+                    aria-label="game-grid"
+                    data-session-status={status}
+                    data-control-owner={controlOwner}
+                />
             </div>
-            <button type="button" className="reset-button" data-session-status={status} onClick={onReset}>
+            <button
+                type="button"
+                className="reset-button"
+                data-session-status={status}
+                data-control-owner={controlOwner}
+                onClick={onReset}
+            >
                 Reset
             </button>
         </main>

@@ -3,5 +3,5 @@
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read:
 
-- specs/002-snake-autostart-wrap-restart/plan.md
+- specs/003-hamiltonian-autoplay-random-food/plan.md
     <!-- SPECKIT END -->
